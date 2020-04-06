@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Work Timer</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="index.js" defer></script>
+  </head>
+  <body>
+    <div class="timer">
+      <div class="countdown" id="countdown"></div>
+      <input
+        type="text"
+        id="input-task-name"
+        placeholder="What are you working on?"
+      />
+      <div class="countdown-controls">
+        <button id="start">Start</button>
+        <button id="stop">Stop</button>
+      </div>
+    </div>
+    <div class="history">
+      <button id="clear-history">Clear History</button>
+      <ul id="history-list"></ul>
+    </div>
+  </body>
+</html>

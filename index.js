@@ -64,7 +64,7 @@ function updateDisplay() {
   historyList.innerHTML = "";
   history.forEach((entry) => {
     const li = document.createElement("li");
-    li.textContent = `${new Date(entry.startedAt).toLocaleString()} ${
+    li.textContent = `${new Date(entry.startedAt).toLocaleString("de")} ${
       entry.task
     }`;
     historyList.appendChild(li);

@@ -38,6 +38,7 @@ function startTimer() {
       setCountdownDisplay(remainingTimeInMs);
     } else {
       clearInterval(intervalHandle);
+      intervalHandle = null;
       setCountdownDisplay(0);
       addToHistory(inputTaskName.value, startTime);
     }
@@ -46,6 +47,7 @@ function startTimer() {
 
 function stopTimer() {
   clearInterval(intervalHandle);
+  intervalHandle = null;
   setCountdownDisplay(countdownDurationInMs);
 }
 

@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Work Timer</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="index.js" defer></script>
   </head>
   <body>
-    <div class="timer">
-      <div class="countdown" id="countdown"></div>
-      <input
-        type="text"
-        id="input-task-name"
-        placeholder="What are you working on?"
-      />
-      <div class="countdown-controls">
-        <button class="icon" id="stop"><img src="img/icon-stop.svg"></img></button>
-        <button class="icon" id="start"><img src="img/icon-play.svg"></img></button>
+    <div id="app">
+      <timer @completed="addToHistory($event)"></timer>
+      <div v-if="history.length" class="history">
+        <button id="clear-history" @click="clearHistory">Clear History</button>
+        <ul id="history-list">
+          <li v-for="entry of history" :key="entry.startedAt">
+            {{new Date(entry.startedAt).toLocaleString("de")}} {{entry.task}}
+          </li>
+        </ul>
       </div>
-    </div>
-    <div class="history">
-      <button id="clear-history">Clear History</button>
-      <ul id="history-list"></ul>
     </div>
   </body>
 </html>

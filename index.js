@@ -1,106 +1,111 @@
-// Utilities for Countdown Formatting
-function addZeroPadding(str) {
-  str = String(str);
-  if (str.length == 1) {
-    return `0${str}`;
-  } else {
-    return str;
-  }
-}
-function formatCountdown(milliseconds) {
-  const seconds = Math.round(milliseconds / 1000);
-  const minutes = Math.floor(seconds / 60);
+const Timer = {
+  template: `<div class="timer">
+  <div class="countdown" :class="{running: timerIsRunning}"
+  :style="countdown == 0 ? {color: 'darkorange'} : {}">{{ formattedCountdown }}</div>
+  <input
+    type="text"
+    v-model="inputTaskName"
+    placeholder="What are you working on?"
+  />
+  <div class="countdown-controls">
+    <button class="icon" @click="startTimer">
+      <img :src="timerIsRunning ? 'img/icon-rewind.svg' : 'img/icon-play.svg'"></img>
+    </button>
+    <button class="icon" :disabled="!(countdown == 0 || timerIsRunning)" @click="stopTimer">      <img src="img/icon-stop.svg"></img></button>
+  </div>
+</div>`,
+  props: {
+    duration: {
+      type: Number,
+      default: 5000,
+    },
+  },
+  data() {
+    return {
+      countdown: 0,
+      intervalHandle: null,
+      inputTaskName: "",
+    };
+  },
+  computed: {
+    formattedCountdown() {
+      function addZeroPadding(str) {
+        str = String(str);
+        if (str.length == 1) {
+          return `0${str}`;
+        } else {
+          return str;
+        }
+      }
+      function formatCountdown(milliseconds) {
+        const seconds = Math.round(milliseconds / 1000);
+        const minutes = Math.floor(seconds / 60);
 
-  return `${minutes}:${addZeroPadding(seconds % 60)}`;
-}
+        return `${minutes}:${addZeroPadding(seconds % 60)}`;
+      }
+      return formatCountdown(this.countdown);
+    },
+    timerIsRunning() {
+      return this.intervalHandle != null;
+    },
+  },
+  methods: {
+    startTimer() {
+      this.stopTimer();
+      const startTime = Date.now();
+      const endTime = startTime + this.duration;
 
-// Timer
-const countdown = document.getElementById("countdown");
-const inputTaskName = document.getElementById("input-task-name");
-const countdownDurationInMs = 5000;
+      this.intervalHandle = setInterval(() => {
+        const remainingTimeInMs = endTime - Date.now();
+        if (remainingTimeInMs > 0) {
+          this.countdown = remainingTimeInMs;
+        } else {
+          this.clearTimer();
+          this.countdown = 0;
+          this.$emit("completed", {
+            task: this.inputTaskName,
+            startedAt: startTime,
+          });
+        }
+      }, 1000);
+    },
+    stopTimer() {
+      this.clearTimer();
+      this.countdown = this.duration;
+    },
+    clearTimer() {
+      clearInterval(this.intervalHandle);
+      this.intervalHandle = null;
+    },
+  },
+  created() {
+    this.stopTimer();
+  },
+};
 
-// Global intervalHandle
-let intervalHandle = null;
+Vue.component("timer", Timer);
 
-// Convenience function to make sure we always use the formatCountdown function when we display a countdown
-function setCountdownDisplay(timeInMs) {
-  countdown.textContent = formatCountdown(timeInMs);
-}
-
-function startTimer() {
-  stopTimer();
-  const startTime = Date.now();
-  const endTime = startTime + countdownDurationInMs;
-
-  intervalHandle = setInterval(() => {
-    const remainingTimeInMs = endTime - Date.now();
-    if (remainingTimeInMs > 0) {
-      setCountdownDisplay(remainingTimeInMs);
-    } else {
-      clearInterval(intervalHandle);
-      setCountdownDisplay(0);
-      addToHistory(inputTaskName.value, startTime);
+const app = new Vue({
+  el: "#app",
+  data() {
+    return {
+      history: [],
+    };
+  },
+  methods: {
+    clearHistory() {
+      localStorage.removeItem("history");
+      this.history = [];
+    },
+    addToHistory(entry) {
+      this.history.push(entry);
+      localStorage.setItem("history", JSON.stringify(this.history));
+    },
+  },
+  created() {
+    const storedHistory = localStorage.getItem("history");
+    if (storedHistory != null) {
+      this.history = JSON.parse(storedHistory);
     }
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(intervalHandle);
-  setCountdownDisplay(countdownDurationInMs);
-}
-
-// Reset display at startup
-setCountdownDisplay(countdownDurationInMs);
-
-document.getElementById("start").addEventListener("click", startTimer);
-document.getElementById("stop").addEventListener("click", stopTimer);
-
-// History
-
-let history = [];
-const historyList = document.getElementById("history-list");
-
-function updateDisplay() {
-  historyList.innerHTML = "";
-  history.forEach((entry) => {
-    const li = document.createElement("li");
-    li.textContent = `${new Date(entry.startedAt).toLocaleString("de")} ${
-      entry.task
-    }`;
-    historyList.appendChild(li);
-  });
-}
-
-function addToHistory(task, startedAt) {
-  history.push({
-    task,
-    startedAt,
-  });
-  updateDisplay();
-  storeHistory(); // Store history whenever an item is added to the history.
-}
-
-function storeHistory() {
-  localStorage.setItem("history", JSON.stringify(history));
-}
-
-function loadHistory() {
-  const storedHistory = localStorage.getItem("history");
-  if (storedHistory != null) {
-    history = JSON.parse(storedHistory);
-    updateDisplay();
-  }
-}
-// Load history at startup
-loadHistory();
-
-// Clear History Feature
-function clearHistory() {
-  localStorage.removeItem("history");
-  history = [];
-  updateDisplay();
-}
-
-document
-  .getElementById("clear-history")
-  .addEventListener("click", clearHistory);
+  },
+});

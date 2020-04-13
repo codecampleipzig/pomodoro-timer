@@ -17,7 +17,7 @@ function formatCountdown(milliseconds) {
 // Timer
 const countdown = document.getElementById("countdown");
 const inputTaskName = document.getElementById("input-task-name");
-const countdownDurationInMs = 1000;
+const countdownDurationInMs = 5000;
 
 // Global intervalHandle
 let intervalHandle = null;

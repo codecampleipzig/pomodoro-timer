@@ -12,8 +12,27 @@ body {
 }
 
 .countdown {
-  font-size: 30vmin;
+  font-size: 20vmin;
   margin-bottom: 1rem;
+}
+
+.countdown.running {
+  color: darkcyan;
+}
+
+button.icon img {
+  width: 50px;
+}
+
+button.icon {
+  padding: 0;
+  border: none;
+  border-radius: 100%;
+}
+
+button.icon:disabled {
+  cursor: initial;
+  opacity: 50%;
 }
 
 .timer {
@@ -35,6 +54,7 @@ button {
   margin: 0.5em 1em;
   cursor: pointer;
   border-radius: 0.15em;
+  outline: none;
 }
 
 button:hover {

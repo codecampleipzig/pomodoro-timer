@@ -4,10 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vue Playground</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
   </head>
   <body>
+    <div id="app">
+      <button @click="onClickMe()">Click Me</button>
+    </div>
     <script>
-      // Javascript
+      const vue = new Vue({
+        el: "#app",
+        data: {
+          countdown: 5000,
+        },
+        methods: {
+          onClickMe: function () {
+            alert("This works");
+          },
+        },
+      });
     </script>
   </body>
 </html>

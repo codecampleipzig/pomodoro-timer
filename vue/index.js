@@ -1,3 +1,42 @@
+const app = new Vue({
+  el: "#app",
+  data: {
+    countdown: 0,
+    iconPlay: "../img/icon-play.svg",
+    iconRewind: "../img/icon-rewind.svg",
+    intervalHandle: null,
+    history: [],
+  },
+  methods: {
+    startTimer: function () {
+      stopTimer();
+      const startTime = Date.now();
+      const endTime = startTime + countdownDurationInMs;
+
+      app.intervalHandle = setInterval(() => {
+        const remainingTimeInMs = endTime - Date.now();
+        if (remainingTimeInMs > 0) {
+          app.countdown = remainingTimeInMs;
+        } else {
+          clearInterval(app.intervalHandle);
+          app.intervalHandle = null;
+          app.countdown = 0;
+          addToHistory(inputTaskName.value, startTime);
+        }
+      }, 1000);
+    },
+    stopTimer: function () {
+      clearInterval(app.intervalHandle);
+      app.intervalHandle = null;
+      app.countdown = countdownDurationInMs;
+    },
+    clearHistory: function () {
+      localStorage.removeItem("history");
+      app.history = [];
+    },
+  },
+});
+
 // Utilities for Countdown Formatting
 function addZeroPadding(str) {
   str = String(str);
@@ -15,82 +54,56 @@ function formatCountdown(milliseconds) {
 }
 
 // Timer
-const countdown = document.getElementById("countdown");
+// const countdown = document.getElementById("countdown");
 const inputTaskName = document.getElementById("input-task-name");
 const countdownDurationInMs = 5000;
-
-// Global intervalHandle
-let intervalHandle = null;
-
-// Convenience function to make sure we always use the formatCountdown function when we display a countdown
-function setCountdownDisplay(timeInMs) {
-  countdown.textContent = formatCountdown(timeInMs);
-}
 
 function startTimer() {
   stopTimer();
   const startTime = Date.now();
   const endTime = startTime + countdownDurationInMs;
 
-  intervalHandle = setInterval(() => {
+  app.intervalHandle = setInterval(() => {
     const remainingTimeInMs = endTime - Date.now();
     if (remainingTimeInMs > 0) {
-      setCountdownDisplay(remainingTimeInMs);
+      app.countdown = remainingTimeInMs;
     } else {
-      clearInterval(intervalHandle);
-      intervalHandle = null;
-      setCountdownDisplay(0);
+      clearInterval(app.intervalHandle);
+      app.intervalHandle = null;
+      app.countdown = 0;
       addToHistory(inputTaskName.value, startTime);
     }
   }, 1000);
 }
 
 function stopTimer() {
-  clearInterval(intervalHandle);
-  intervalHandle = null;
-  setCountdownDisplay(countdownDurationInMs);
+  clearInterval(app.intervalHandle);
+  app.intervalHandle = null;
+  app.countdown = countdownDurationInMs;
 }
 
 // Reset display at startup
-setCountdownDisplay(countdownDurationInMs);
+app.countdown = countdownDurationInMs;
 
-document.getElementById("start").addEventListener("click", startTimer);
-document.getElementById("stop").addEventListener("click", stopTimer);
-
-// History
-
-let history = [];
-const historyList = document.getElementById("history-list");
-
-function updateDisplay() {
-  historyList.innerHTML = "";
-  history.forEach((entry) => {
-    const li = document.createElement("li");
-    li.textContent = `${new Date(entry.startedAt).toLocaleString("de")} ${
-      entry.task
-    }`;
-    historyList.appendChild(li);
-  });
-}
+// document.getElementById("start").addEventListener("click", startTimer);
+// document.getElementById("stop").addEventListener("click", stopTimer);
 
 function addToHistory(task, startedAt) {
-  history.push({
+  app.history.push({
     task,
     startedAt,
   });
-  updateDisplay();
-  storeHistory(); // Store history whenever an item is added to the history.
+  storeHistory(); // Store app.history whenever an item is added to the history.
 }
 
 function storeHistory() {
-  localStorage.setItem("history", JSON.stringify(history));
+  localStorage.setItem("history", JSON.stringify(app.history));
 }
 
 function loadHistory() {
   const storedHistory = localStorage.getItem("history");
   if (storedHistory != null) {
-    history = JSON.parse(storedHistory);
-    updateDisplay();
+    app.history = JSON.parse(storedHistory);
   }
 }
 // Load history at startup
@@ -99,10 +112,9 @@ loadHistory();
 // Clear History Feature
 function clearHistory() {
   localStorage.removeItem("history");
-  history = [];
-  updateDisplay();
+  app.history = [];
 }
 
-document
-  .getElementById("clear-history")
-  .addEventListener("click", clearHistory);
+// document
+//   .getElementById("clear-history")
+//   .addEventListener("click", clearHistory);

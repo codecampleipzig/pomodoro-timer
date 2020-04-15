@@ -5,24 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Work Timer Vue</title>
     <link rel="stylesheet" href="../css/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="index.js" defer></script>
   </head>
   <body>
-    <div class="timer">
-      <div class="countdown" id="countdown"></div>
-      <input
-        type="text"
-        id="input-task-name"
-        placeholder="What are you working on?"
-      />
-      <div class="countdown-controls">
-        <button class="icon" id="stop"><img src="../img/icon-stop.svg"></img></button>
-        <button class="icon" id="start"><img src="../img/icon-play.svg"></img></button>
+    <div id="app">
+      <div class="timer">
+        <div class="countdown" id="countdown">{{countdown}}</div>
+        <input
+          type="text"
+          id="input-task-name"
+          placeholder="What are you working on?"
+        />
+        <div class="countdown-controls">
+          <button @click="stopTimer()" v-show="intervalHandle != null" class="icon" id="stop"><img src="../img/icon-stop.svg"></img></button>
+          <button @click="startTimer()" class="icon" id="start"><img :src="intervalHandle ? iconRewind : iconPlay"></img></button>
+        </div>
       </div>
-    </div>
-    <div class="history">
-      <button id="clear-history">Clear History</button>
-      <ul id="history-list"></ul>
+      <div class="history">
+        <button @click="clearHistory()" v-show="history.length > 0" id="clear-history">Clear History</button>
+        <ul>
+          <li v-for="(entry, index) in history" :key="entry.startedAt">
+            {{new Date(entry.startedAt).toLocaleString()}}
+            {{entry.task}}</li>
+        </ul>
+      </div>
     </div>
   </body>
 </html>

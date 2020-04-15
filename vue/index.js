@@ -8,31 +8,31 @@ const app = new Vue({
     history: [],
   },
   methods: {
-    startTimer: function () {
-      stopTimer();
+    startTimer() {
+      this.stopTimer();
       const startTime = Date.now();
       const endTime = startTime + countdownDurationInMs;
 
-      app.intervalHandle = setInterval(() => {
+      this.intervalHandle = setInterval(() => {
         const remainingTimeInMs = endTime - Date.now();
         if (remainingTimeInMs > 0) {
-          app.countdown = remainingTimeInMs;
+          this.countdown = remainingTimeInMs;
         } else {
-          clearInterval(app.intervalHandle);
-          app.intervalHandle = null;
-          app.countdown = 0;
+          clearInterval(this.intervalHandle);
+          this.intervalHandle = null;
+          this.countdown = 0;
           addToHistory(inputTaskName.value, startTime);
         }
       }, 1000);
     },
-    stopTimer: function () {
-      clearInterval(app.intervalHandle);
-      app.intervalHandle = null;
-      app.countdown = countdownDurationInMs;
+    stopTimer() {
+      clearInterval(this.intervalHandle);
+      this.intervalHandle = null;
+      this.countdown = countdownDurationInMs;
     },
-    clearHistory: function () {
+    clearHistory() {
       localStorage.removeItem("history");
-      app.history = [];
+      this.history = [];
     },
   },
 });
@@ -54,39 +54,11 @@ function formatCountdown(milliseconds) {
 }
 
 // Timer
-// const countdown = document.getElementById("countdown");
 const inputTaskName = document.getElementById("input-task-name");
 const countdownDurationInMs = 5000;
 
-function startTimer() {
-  stopTimer();
-  const startTime = Date.now();
-  const endTime = startTime + countdownDurationInMs;
-
-  app.intervalHandle = setInterval(() => {
-    const remainingTimeInMs = endTime - Date.now();
-    if (remainingTimeInMs > 0) {
-      app.countdown = remainingTimeInMs;
-    } else {
-      clearInterval(app.intervalHandle);
-      app.intervalHandle = null;
-      app.countdown = 0;
-      addToHistory(inputTaskName.value, startTime);
-    }
-  }, 1000);
-}
-
-function stopTimer() {
-  clearInterval(app.intervalHandle);
-  app.intervalHandle = null;
-  app.countdown = countdownDurationInMs;
-}
-
 // Reset display at startup
 app.countdown = countdownDurationInMs;
-
-// document.getElementById("start").addEventListener("click", startTimer);
-// document.getElementById("stop").addEventListener("click", stopTimer);
 
 function addToHistory(task, startedAt) {
   app.history.push({
@@ -108,13 +80,3 @@ function loadHistory() {
 }
 // Load history at startup
 loadHistory();
-
-// Clear History Feature
-function clearHistory() {
-  localStorage.removeItem("history");
-  app.history = [];
-}
-
-// document
-//   .getElementById("clear-history")
-//   .addEventListener("click", clearHistory);

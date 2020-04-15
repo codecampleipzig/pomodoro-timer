@@ -18,7 +18,7 @@
           placeholder="What are you working on?"
         />
         <div class="countdown-controls">
-          <button @click="stopTimer()" v-show="intervalHandle != null" class="icon" id="stop"><img src="../img/icon-stop.svg"></img></button>
+          <button @click="stopTimer" v-show="intervalHandle != null" class="icon" id="stop"><img src="../img/icon-stop.svg"></img></button>
           <button @click="startTimer()" class="icon" id="start"><img :src="intervalHandle ? iconRewind : iconPlay"></img></button>
         </div>
       </div>
